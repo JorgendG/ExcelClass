@@ -29,7 +29,7 @@ Class ExcelReporting
 
     [void]SetCulture()
     {
-        #$curculture = Get-Culture
+        $curculture = Get-Culture
 
         $culture = [System.Globalization.CultureInfo]::GetCultureInfo(1033)
         [System.Threading.Thread]::CurrentThread.CurrentUICulture = $culture
@@ -62,6 +62,24 @@ Class ExcelReporting
     {
         $this.Excel.ActiveSheet.UsedRange.Columns.AutoFit()
     }
+
+    [void]FromArray( [psobject[]]$iets )
+    {
+        $headers = $iets[0].psobject.Properties.name
+        $this.SetHeaders( $headers )
+        $row = 2
+        #$column = 1
+        foreach( $ietsitem in $iets )
+        {
+            $column = 1
+            foreach( $header in $headers )
+            {
+                $this.SetItem( $row, $column++, $ietsitem."$header")
+            }
+            $row++
+        }
+
+    }
 }
 
 # Voorbeeld waarbij de actieve processen in Excel getoond worden.
@@ -86,3 +104,12 @@ foreach( $rptItemitem in $processen )
 }
 
 $processenRpt.AutoFit()
+
+#############################################
+
+# Voorbeeld waarbij een array direct in Excel geplaatst wordt
+
+$ServicesRpt = [ExcelReporting]::new( 'Services')
+$ServicesRpt.SetFreezePane()
+$ServicesRpt.FromArray( (Get-Service ))
+$ServicesRpt.AutoFit()
