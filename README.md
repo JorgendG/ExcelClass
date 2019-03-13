@@ -1,2 +1,2 @@
 # ExcelClass
-Reporing using Excel
+Reporting using Excel
